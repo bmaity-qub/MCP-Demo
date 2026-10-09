@@ -1,0 +1,30 @@
+MCP and RAG
+
+Retrieval-Augmented Generation (RAG) is a technique where a language model's
+answer is grounded in retrieved documents rather than generated purely from
+its internal parameters. A typical RAG pipeline embeds a user's question,
+searches a vector database for the most similar document chunks, and feeds
+those chunks back into the model's context window so the model can produce
+an answer that cites real, current information instead of relying only on
+what it memorized during training.
+
+MCP and RAG are complementary, not competing, ideas. MCP does not replace
+RAG; it standardizes how the retrieval step itself is exposed to the model.
+Instead of a RAG pipeline being hard-wired into one specific application,
+the retrieval logic (embedding the query, searching the vector index,
+returning ranked chunks) can be packaged as an MCP tool, such as
+search_documents. Any MCP-compatible host can then call that same tool to
+get grounded context, without re-implementing the retrieval logic itself.
+
+In an agentic RAG setup, the agent does not always retrieve by default.
+Instead, the model decides whether retrieval is needed for a given question,
+which tool to call, and how many results to request, then incorporates the
+retrieved evidence into its reasoning before producing a final answer. MCP
+gives that decision a stable, discoverable interface: the agent inspects the
+list of available tools at runtime and chooses to call search_documents when
+it determines that grounding is required.
+
+This reduces integration maintenance because the same search server can back
+multiple applications, and it keeps the retrieval quality controllable in one
+place, since improvements to the underlying vector index or embedding model
+immediately benefit every application that calls the server.

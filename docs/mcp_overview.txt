@@ -1,0 +1,34 @@
+MCP Overview
+
+Model Context Protocol (MCP) is an open standard that defines how AI applications
+connect to external tools, data sources, and services. Before MCP, every AI
+application had to build a custom, bespoke integration for every tool it wanted
+to use, and every tool had to build a separate integration for every AI
+application that wanted to call it. This is known as the N x M integration
+problem: N applications times M tools means N times M custom adapters, each
+with its own authentication, error handling, and maintenance burden.
+
+MCP solves this by introducing a standard client-server contract. An MCP
+server exposes capabilities in three shapes: tools (actions the model can
+invoke, such as a database query or a search function), resources (read-only
+data the model can pull into context, such as a file or a document), and
+prompts (reusable prompt templates the server can offer to the client).
+
+An MCP host is the AI application itself, such as a chat interface or an
+agent runtime. The host embeds an MCP client, which manages the session and
+the transport (commonly stdio for local servers, or HTTP/SSE for remote
+servers). The client talks to one or more MCP servers, each of which wraps a
+specific capability provider: a database, an API, a filesystem, or a search
+index.
+
+The interaction is a predictable exchange: the client initializes a session
+with the server, discovers the server's available tools through a
+tools/list call, invokes a tool with structured parameters when the model
+decides it needs that capability, and receives a structured result back,
+which the model then uses to compose its final answer.
+
+Because the contract is standardized, a single MCP server can be reused
+across many different AI applications without modification, and a single AI
+application can plug into many different MCP servers without writing custom
+adapters for each one. This turns integration work from a one-off, bespoke
+project into a reusable, composable building block.

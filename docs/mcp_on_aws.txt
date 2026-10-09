@@ -1,0 +1,26 @@
+Hosting MCP Servers on AWS
+
+An MCP server can be hosted on AWS in several ways, and none of them require
+a paid managed model service such as Amazon Bedrock. The server itself is
+just a lightweight process that speaks the MCP protocol over stdio or over
+HTTP; the model that calls it can run anywhere, including locally.
+
+For a short-lived or infrequently called tool, AWS Lambda is a good fit. It
+is serverless, billed per invocation, and included in the AWS Free Tier for
+low volumes, which makes it inexpensive for demos and small internal tools.
+
+For a server that needs to stay warm and hold state, such as a long-running
+vector index in memory, ECS or Fargate is a better fit. The server runs as a
+container behind a load balancer, and scaling is handled by the platform.
+
+For the simplest possible setup, especially for a live demo, a single EC2
+instance (t2.micro or t3.micro, both Free Tier eligible) can run the MCP
+server directly with Python, no containers required.
+
+API Gateway combined with IAM can sit in front of any of these options to
+handle authentication, throttling, and request logging, giving the same
+governance and observability benefits enterprises expect, without needing a
+managed inference service. The AI model itself can be called separately,
+whether that is a local open-source model, a self-hosted model, or a
+pay-as-you-go API, keeping the hosting cost of the MCP layer independent of
+model hosting cost.

@@ -1,0 +1,5 @@
+mcp
+faiss-cpu
+sentence-transformers
+requests
+python-dotenv
